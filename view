@@ -1,0 +1,14 @@
+# View all logs
+  sudo journalctl -u converge-dev.service
+
+  # Follow logs in real-time (like tail -f)
+  sudo journalctl -u converge-dev.service -f
+
+  # View logs from today
+  sudo journalctl -u converge-dev.service --since today
+
+  # View last 100 lines
+  sudo journalctl -u converge-dev.service -n 100
+
+  # View logs with timestamps
+  sudo journalctl -u converge-dev.service -o short-iso

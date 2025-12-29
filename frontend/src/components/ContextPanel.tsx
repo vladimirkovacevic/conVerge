@@ -2,11 +2,11 @@
  * Panel for viewing node context and response
  */
 
-import type { ConversationNode } from '../types/graph';
+import type { NodeData } from '../types/graph';
 
 interface ContextPanelProps {
-  node: ConversationNode | undefined;
-  ancestors: ConversationNode[];
+  node: NodeData | undefined;
+  ancestors: NodeData[];
 }
 
 export function ContextPanel({ node, ancestors }: ContextPanelProps) {

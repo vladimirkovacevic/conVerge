@@ -293,15 +293,19 @@ sudo systemctl stop converge-dev.service
 
 #### 3. Configure Project Settings
 
+**IMPORTANT:** You must set the Root Directory, or the build will fail!
+
 **Framework Preset:** Vite
 
-**Root Directory:** `frontend`
+**Root Directory:** `frontend` ⚠️ **Click "Edit" button and type `frontend`** ⚠️
 
-**Build Command:** `npm run build`
+**Build Command:** `npm run build` (or leave blank for Vite default)
 
-**Output Directory:** `dist`
+**Output Directory:** `dist` (or leave blank for Vite default)
 
-**Install Command:** `npm install`
+**Install Command:** `npm install` (or leave blank for Vite default)
+
+**Note:** Make sure to click the **Edit** button next to Root Directory and explicitly set it to `frontend`. If this isn't set, Vercel will try to build from the repository root and fail.
 
 #### 4. Add Environment Variable
 
