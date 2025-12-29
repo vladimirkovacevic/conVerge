@@ -1,0 +1,17 @@
+[Unit]
+Description=ConVerge Cloudflare Tunnel (Quick Tunnel)
+After=network.target converge-dev.service
+Requires=converge-dev.service
+
+[Service]
+Type=simple
+User=digital
+WorkingDirectory=/home/digital/conVerge
+ExecStart=/usr/local/bin/cloudflared tunnel --url http://localhost:8001
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/digital/conVerge/tunnel.log
+StandardError=append:/home/digital/conVerge/tunnel-error.log
+
+[Install]
+WantedBy=multi-user.target

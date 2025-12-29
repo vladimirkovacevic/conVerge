@@ -10,11 +10,8 @@ ConVerge enables non-linear navigation of AI conversations, allowing you to bran
 
 - 🌳 **Graph Visualization** - Interactive conversation tree with React Flow
 - 🔀 **Non-linear Navigation** - Branch from any node, explore multiple paths
-- 💬 **Real-time Streaming** - Watch LLM responses appear token-by-token
 - 👁️ **Context Transparency** - See exact context used for each response
 - 🎨 **Beautiful UI** - Modern design with dark mode support
-- ⚡ **Zero Setup** - In-memory storage, no database required
-- 🆓 **Free to Use** - Uses free OpenRouter models by default
 
 ---
 
@@ -234,10 +231,128 @@ VITE_API_URL=http://localhost:8001
 
 ## 🚀 Production Deployment
 
-See **[DEPLOY_INSTRUCTIONS.md](DEPLOY_INSTRUCTIONS.md)** for complete deployment guide:
-- Frontend: Vercel (free)
-- Backend: DigitalOcean ($6/month)
-- Includes SSL, Nginx, systemd setup
+Deploy ConVerge for **FREE** using Vercel (frontend) and Cloudflare Tunnel (backend):
+
+### **Backend Setup (Free with Cloudflare Tunnel)**
+
+#### 1. Start Backend Service
+```bash
+# The backend runs as a systemd service
+sudo systemctl start converge-dev.service
+sudo systemctl enable converge-dev.service  # Auto-start on boot
+
+# Check status
+sudo systemctl status converge-dev.service
+```
+
+#### 2. Start Cloudflare Tunnel
+```bash
+# The tunnel runs as a systemd service
+sudo systemctl start converge-tunnel.service
+sudo systemctl enable converge-tunnel.service  # Auto-start on boot
+
+# Get your public URL
+./get_tunnel_url.sh
+```
+
+You'll get a free public URL like:
+```
+https://theft-breed-saw-foot.trycloudflare.com
+```
+
+**Note:** Quick tunnels generate a new URL each time the service restarts. For a permanent URL, set up a named tunnel with a Cloudflare account.
+
+#### 3. Manage Services
+```bash
+# View backend logs
+sudo journalctl -u converge-dev.service -f
+
+# View tunnel logs
+sudo journalctl -u converge-tunnel.service -f
+
+# Restart services
+sudo systemctl restart converge-dev.service
+sudo systemctl restart converge-tunnel.service
+
+# Stop services
+sudo systemctl stop converge-tunnel.service
+sudo systemctl stop converge-dev.service
+```
+
+### **Frontend Deployment (Vercel Website)**
+
+#### 1. Push Code to GitHub
+
+
+#### 2. Import Project to Vercel
+
+1. Go to [vercel.com](https://vercel.com) and sign in
+2. Click **"Add New Project"**
+3. Import your GitHub repository
+4. Select the repository (e.g., `your-username/conVerge`)
+
+#### 3. Configure Project Settings
+
+**Framework Preset:** Vite
+
+**Root Directory:** `frontend`
+
+**Build Command:** `npm run build`
+
+**Output Directory:** `dist`
+
+**Install Command:** `npm install`
+
+#### 4. Add Environment Variable
+
+In the **Environment Variables** section, add:
+
+**Key:** `VITE_API_URL`
+**Value:** `https://theft-breed-saw-foot.trycloudflare.com`
+
+Click **"Add"** then **"Deploy"**
+
+#### 5. Update CORS Settings
+
+Add your Vercel domain to backend CORS in `.env`:
+```bash
+CORS_ORIGINS=https://convergecontext.vercel.app,http://localhost:5173
+```
+
+Then restart the backend:
+```bash
+sudo systemctl restart converge-dev.service
+```
+
+#### 6. Access Your Deployed App
+
+Your app will be live at: **https://convergecontext.vercel.app**
+
+#### 7. Update Environment Variables (if tunnel restarts)
+
+When your tunnel URL changes:
+1. Go to your Vercel project dashboard
+2. Navigate to **Settings** → **Environment Variables**
+3. Edit `VITE_API_URL` with the new tunnel URL
+4. Redeploy: **Deployments** → Click **"..."** → **"Redeploy"**
+
+### **Complete Setup Checklist**
+
+- [x] Backend service running (`sudo systemctl status converge-dev.service`)
+- [x] Cloudflare tunnel running (`sudo systemctl status converge-tunnel.service`)
+- [x] Public URL obtained (`./get_tunnel_url.sh`)
+- [x] Frontend deployed to Vercel
+- [x] `VITE_API_URL` set in Vercel environment variables
+- [x] CORS origins updated in backend `.env`
+- [x] Test the deployed app at your Vercel URL
+
+### **Alternative: Self-Hosted Backend**
+
+See **[DEPLOY_INSTRUCTIONS.md](DEPLOY_INSTRUCTIONS.md)** for self-hosted deployment:
+- DigitalOcean Droplet ($6/month)
+- Custom domain with SSL
+- Nginx reverse proxy
+- Permanent URLs
 
 ---
 
@@ -291,12 +406,6 @@ npm install
 - Verify browser console for errors
 - Ensure `.env` has correct `VITE_API_URL`
 
-**API key issues?**
-- Get free key at [openrouter.ai/keys](https://openrouter.ai/keys)
-- Add to `.env` as `OPENROUTER_API_KEY=...`
-- Restart backend server
-
----
 
 ## 📚 References
 
