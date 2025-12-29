@@ -30,7 +30,7 @@ app = FastAPI(
     description="Graph-based conversational context management framework (In-Memory)",
 )
 
-# Request logging middleware
+# Request logging middleware with manual CORS headers
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
@@ -40,8 +40,21 @@ async def log_requests(request: Request, call_next):
     logger.info(f"  Client: {request.client.host if request.client else 'unknown'}")
     logger.info(f"  Headers: {dict(request.headers)}")
 
+    # Handle preflight requests
+    if request.method == "OPTIONS":
+        response = await call_next(request)
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        return response
+
     # Process request
     response = await call_next(request)
+
+    # Manually add CORS headers to ensure they pass through Cloudflare Tunnel
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
 
     # Log response
     duration = (time.time() - start_time) * 1000
