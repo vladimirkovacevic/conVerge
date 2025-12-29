@@ -55,11 +55,11 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Start FastAPI server
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8001
 ```
 
-Backend running at **http://localhost:8000**
-- API docs: **http://localhost:8000/docs**
+Backend running at **http://localhost:8001**
+- API docs: **http://localhost:8001/docs**
 
 ### **4. Start Frontend** (new terminal)
 
@@ -207,7 +207,7 @@ GET    /api/nodes/{id}/ancestors       # Get path from root
 GET    /api/nodes/{id}/children        # Get child nodes
 ```
 
-Explore the full API at **http://localhost:8000/docs**
+Explore the full API at **http://localhost:8001/docs**
 
 ---
 
@@ -227,8 +227,17 @@ CORS_ORIGINS=http://localhost:5173
 ### **Frontend (.env)**
 
 ```bash
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=http://localhost:8001
 ```
+
+---
+
+## 🚀 Production Deployment
+
+See **[DEPLOY_INSTRUCTIONS.md](DEPLOY_INSTRUCTIONS.md)** for complete deployment guide:
+- Frontend: Vercel (free)
+- Backend: DigitalOcean ($6/month)
+- Includes SSL, Nginx, systemd setup
 
 ---
 
@@ -278,7 +287,7 @@ npm install
 ```
 
 **WebSocket connection fails?**
-- Check backend is running on port 8000
+- Check backend is running on port 8001
 - Verify browser console for errors
 - Ensure `.env` has correct `VITE_API_URL`
 

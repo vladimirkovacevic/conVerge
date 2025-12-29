@@ -1,0 +1,16 @@
+[Unit]
+Description=ConVerge FastAPI Backend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/converge/backend
+Environment="PATH=/var/www/converge/backend/venv/bin"
+EnvironmentFile=/var/www/converge/.env
+ExecStart=/var/www/converge/backend/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers 2
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
