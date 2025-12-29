@@ -35,12 +35,20 @@ function ConVergeApp() {
   const [streamingResponse, setStreamingResponse] = useState('');
   const [selectedNodeAncestors, setSelectedNodeAncestors] = useState<any[]>([]);
 
-  const { data: conversations } = useConversations();
+  const { data: conversations, refetch: refetchConversations } = useConversations();
   const { data: graphData, refetch: refetchGraph } = useGraph(currentConversationId);
   const createConversation = useCreateConversation();
   const selectNode = useSelectNode();
 
   console.log('ConVergeApp state:', { currentConversationId, conversations, graphData });
+
+  // Auto-select first conversation when app loads
+  useEffect(() => {
+    if (conversations && conversations.length > 0 && !currentConversationId) {
+      console.log('Auto-selecting first conversation:', conversations[0].id);
+      setCurrentConversationId(conversations[0].id);
+    }
+  }, [conversations, currentConversationId]);
 
   const selectedNode = graphData?.nodes.find((n) => n.id === graphData.active_node_id);
 
@@ -65,27 +73,21 @@ function ConVergeApp() {
     },
     onError: (error) => {
       console.error('WebSocket error:', error);
-      alert(`Error: ${error}`);
       setStreamingResponse('');
+      // Error is logged to console, no popup needed
     },
   });
 
   const handleCreateConversation = async () => {
-    const title = prompt('Enter conversation title:', 'New Conversation');
-    if (!title) return;
-
-    const context = prompt(
-      'Enter initial system context:',
-      'You are a helpful AI assistant.'
-    );
-    if (!context) return;
-
+    // Create conversation with default values (no prompts!)
+    const timestamp = new Date().toLocaleString();
     const result = await createConversation.mutateAsync({
-      title,
-      initial_context: context,
+      title: `New Conversation - ${timestamp}`,
+      initial_context: 'You are a helpful AI assistant. Assist the user with their questions and provide clear, concise answers.',
     });
 
     setCurrentConversationId(result.conversation_id);
+    await refetchConversations();
   };
 
   const handleNodeClick = useCallback(
@@ -98,8 +100,31 @@ function ConVergeApp() {
   );
 
   const handleQuerySubmit = useCallback(
-    (query: string) => {
-      if (!currentConversationId || !graphData?.active_node_id) return;
+    async (query: string) => {
+      // Auto-create conversation if none exists
+      if (!currentConversationId) {
+        console.log('No conversation selected, auto-creating one...');
+        const result = await createConversation.mutateAsync({
+          title: 'Quick Start',
+          initial_context: 'You are a helpful AI assistant. Assist the user with their questions and provide clear, concise answers.',
+        });
+
+        setCurrentConversationId(result.conversation_id);
+        await refetchConversations();
+
+        // Wait for graph data to load, then send the query
+        setTimeout(() => {
+          sendBranchRequest({
+            query,
+            parent_node_id: result.root_node_id,
+            model: 'google/gemma-2-9b-it:free',
+          });
+        }, 500);
+
+        return;
+      }
+
+      if (!graphData?.active_node_id) return;
 
       sendBranchRequest({
         query,
@@ -107,7 +132,7 @@ function ConVergeApp() {
         model: 'google/gemma-2-9b-it:free',
       });
     },
-    [currentConversationId, graphData?.active_node_id, sendBranchRequest]
+    [currentConversationId, graphData?.active_node_id, sendBranchRequest, createConversation, refetchConversations]
   );
 
   return (
