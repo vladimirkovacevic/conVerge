@@ -5,4 +5,5 @@
 # Usage: ./get_tunnel_url.sh
 
 # Extract URL from tunnel error log (cloudflared writes to stderr)
-grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /home/digital/conVerge/tunnel-error.log | head -1
+# Get the last occurrence (most recent) in case of restarts
+grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' /home/digital/conVerge/tunnel-error.log | tail -1

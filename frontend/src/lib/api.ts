@@ -10,7 +10,8 @@ import type {
 } from '../types/graph';
 
 // Environment-aware API configuration
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+// Remove trailing slash if present to avoid double slashes
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8001').replace(/\/$/, '');
 const API_BASE = `${API_URL}/api`;
 const WS_BASE = `${API_URL.replace('http', 'ws')}/api`;
 
