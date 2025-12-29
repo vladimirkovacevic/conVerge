@@ -255,10 +255,9 @@ async def websocket_stream(websocket: WebSocket, conversation_id: UUID):
         ):
             response_chunks.append(token)
             await websocket.send_json(StreamToken(content=token).model_dump())
-            logger.info(".", end="", flush=True)  # Show streaming progress
+            # Streaming in progress (tokens being sent via WebSocket)
 
         # Update node with complete response
-        logger.info()  # New line after streaming dots
         new_node.response = "".join(response_chunks)
         new_node.latency_ms = int((time.time() - start_time) * 1000)
         logger.info(f"✅ Streaming complete - {len(response_chunks)} tokens in {new_node.latency_ms}ms")

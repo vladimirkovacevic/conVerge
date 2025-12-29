@@ -35,10 +35,16 @@ app = FastAPI(
 async def log_requests(request: Request, call_next):
     start_time = time.time()
 
-    # Log incoming request
+    # Log incoming request (limit header logging to avoid huge logs)
     logger.info(f"→ {request.method} {request.url.path}")
     logger.info(f"  Client: {request.client.host if request.client else 'unknown'}")
-    logger.info(f"  Headers: {dict(request.headers)}")
+
+    # Only log essential headers to avoid truncation in quick tunnels
+    essential_headers = {
+        k: v for k, v in dict(request.headers).items()
+        if k.lower() in ['content-type', 'content-length', 'origin', 'user-agent']
+    }
+    logger.info(f"  Headers: {essential_headers}")
 
     # Handle preflight requests
     if request.method == "OPTIONS":
@@ -51,10 +57,24 @@ async def log_requests(request: Request, call_next):
     # Process request
     response = await call_next(request)
 
-    # Manually add CORS headers to ensure they pass through Cloudflare Tunnel
+    # Minimal CORS headers to avoid quick tunnel truncation
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "*"
+
+    # Remove unnecessary headers that might cause truncation
+    headers_to_remove = []
+    for header in response.headers:
+        # Keep only essential headers
+        if header.lower() not in [
+            'content-type', 'content-length', 'access-control-allow-origin',
+            'access-control-allow-methods', 'access-control-allow-headers'
+        ]:
+            headers_to_remove.append(header)
+
+    for header in headers_to_remove:
+        if header in response.headers:
+            del response.headers[header]
 
     # Log response
     duration = (time.time() - start_time) * 1000
