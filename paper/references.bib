@@ -6,21 +6,7 @@
   note={Discusses context window limitations and management in large language models}
 }
 
-@inproceedings{gao2023retrieval,
-  title={Retrieval-Augmented Generation for Large Language Models: A Survey},
-  author={Gao, Yunfan and Xiong, Yun and Gao, Xinyu and Jia, Kangxiang and Pan, Jinliu and Bi, Yuxi and Dai, Yi and Sun, Jiawei and Wang, Haofen},
-  booktitle={arXiv preprint arXiv:2312.10997},
-  year={2023},
-  note={Covers how retrieved documents and intermediate artifacts are not typically exposed to users}
-}
 
-@article{openai2023gpt4,
-  title={GPT-4 Technical Report},
-  author={OpenAI},
-  journal={arXiv preprint arXiv:2303.08774},
-  year={2023},
-  note={Commercial LLM APIs do not expose internal context construction or reasoning traces}
-}
 
 @inproceedings{wu2023autogen,
   title={AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation},
@@ -38,29 +24,89 @@
   note={Demonstrates that intermediate reasoning steps are critical but typically not preserved in conversation history}
 }
 
-@inproceedings{park2023generative,
-  title={Generative Agents: Interactive Simulacra of Human Behavior},
-  author={Park, Joon Sung and O'Brien, Joseph C and Cai, Carrie J and Morris, Meredith Ringel and Liang, Percy and Bernstein, Michael S},
-  booktitle={Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology},
-  pages={1--22},
-  year={2023},
-  note={Agents maintain internal memory and context that users cannot directly inspect}
+
+@article{chen2017survey,
+  title={A survey on dialogue systems: Recent advances and new frontiers},
+  author={Chen, Hongshen and Liu, Xiaorui and Yin, Dawei and Tang, Jiliang},
+  journal={Acm Sigkdd Explorations Newsletter},
+  volume={19},
+  number={2},
+  pages={25--35},
+  year={2017},
+  publisher={Acm New York, NY, USA}
 }
 
-@article{mialon2023augmented,
-  title={Augmented Language Models: A Survey},
-  author={Mialon, Gr{\'e}goire and Dess{\`\i}, Roberto and Lomeli, Maria and Nalmpantis, Christoforos and Pasunuru, Ram and Raileanu, Roberta and Rozi{\`e}re, Baptiste and Schick, Timo and Dwivedi-Yu, Jane and Celikyilmaz, Asli and others},
-  journal={arXiv preprint arXiv:2302.07842},
-  year={2023},
-  note={Tool-using agents produce artifacts and intermediate outputs not captured in standard chat interfaces}
+@article{yang2020graphdialog,
+  title={GraphDialog: Integrating graph knowledge into end-to-end task-oriented dialogue systems},
+  author={Yang, Shiquan and Zhang, Rui and Erfani, Sarah},
+  journal={arXiv preprint arXiv:2010.01447},
+  year={2020}
 }
 
-@inproceedings{wei2022chain,
-  title={Chain-of-Thought Prompting Elicits Reasoning in Large Language Models},
-  author={Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and Bosma, Maarten and Xia, Fei and Chi, Ed and Le, Quoc V and Zhou, Denny and others},
-  booktitle={Advances in Neural Information Processing Systems},
+@article{liu2024lost,
+  title={Lost in the middle: How language models use long contexts},
+  author={Liu, Nelson F and Lin, Kevin and Hewitt, John and Paranjape, Ashwin and Bevilacqua, Michele and Petroni, Fabio and Liang, Percy},
+  journal={Transactions of the Association for Computational Linguistics},
+  volume={12},
+  pages={157--173},
+  year={2024}
+}
+
+@article{akyurek2024context,
+  title={In-context language learning: Architectures and algorithms},
+  author={Aky{\"u}rek, Ekin and Wang, Bailin and Kim, Yoon and Andreas, Jacob},
+  journal={arXiv preprint arXiv:2401.12973},
+  year={2024}
+}
+
+@article{tang2020multi,
+  title={Multi-hop reading comprehension across documents with path-based graph convolutional network},
+  author={Tang, Zeyun and Shen, Yongliang and Ma, Xinyin and Xu, Wei and Yu, Jiale and Lu, Weiming},
+  journal={arXiv preprint arXiv:2006.06478},
+  year={2020}
+}
+
+@inproceedings{zhang2020task,
+  title={Task-oriented dialog systems that consider multiple appropriate responses under the same context},
+  author={Zhang, Yichi and Ou, Zhijian and Yu, Zhou},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={34},
+  number={05},
+  pages={9604--9611},
+  year={2020}
+}
+
+@inproceedings{besta2024graph,
+  title={Graph of thoughts: Solving elaborate problems with large language models},
+  author={Besta, Maciej and Blach, Nils and Kubicek, Ales and Gerstenberger, Robert and Podstawski, Michal and Gianinazzi, Lukas and Gajda, Joanna and Lehmann, Tomasz and Niewiadomski, Hubert and Nyczyk, Piotr and others},
+  booktitle={Proceedings of the AAAI conference on artificial intelligence},
+  volume={38},
+  number={16},
+  pages={17682--17690},
+  year={2024}
+}
+
+@inproceedings{amershi2019guidelines,
+  title={Guidelines for human-AI interaction},
+  author={Amershi, Saleema and Weld, Dan and Vorvoreanu, Mihaela and Fourney, Adam and Nushi, Besmira and Collisson, Penny and Suh, Jina and Iqbal, Shamsi and Bennett, Paul N and Inkpen, Kori and others},
+  booktitle={Proceedings of the 2019 chi conference on human factors in computing systems},
+  pages={1--13},
+  year={2019}
+}
+
+@article{xu2023retrieval,
+  title={Retrieval meets long context large language models},
+  author={Xu, Peng and Ping, Wei and Wu, Xianchao and McAfee, Lawrence and Zhu, Chen and Liu, Zihan and Subramanian, Sandeep and Bakhturina, Evelina and Shoeybi, Mohammad and Catanzaro, Bryan},
+  journal={arXiv preprint arXiv:2310.03025},
+  year={2023}
+}
+
+@article{amershi2014power,
+  title={Power to the people: The role of humans in interactive machine learning},
+  author={Amershi, Saleema and Cakmak, Maya and Knox, William Bradley and Kulesza, Todd},
+  journal={AI magazine},
   volume={35},
-  pages={24824--24837},
-  year={2022},
-  note={Reasoning traces are valuable but lost when reconstructing context from final Q\&A pairs}
+  number={4},
+  pages={105--120},
+  year={2014}
 }

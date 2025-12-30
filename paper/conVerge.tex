@@ -8,19 +8,20 @@
 % \dochead{An Example of Document Head} 
 % Possible options: Long Paper, Short Paper, Survey, Survey Proposal, Position Paper, Last Words, Book Review, Dissertation Award, Lifetime Achievement Award, Squibs and Discussions, Featured Article
 
-\pageonefooter{Action editor: \{action editor name\}. Submission received: DD Month YYYY; revised version received: DD Month YYYY; accepted for publication: DD Month YYYY.}
+% \pageonefooter{Action editor: \{action editor name\}. Submission received: DD Month YYYY; revised version received: DD Month YYYY; accepted for publication: DD Month YYYY.}
 % To be filled when the paper is accepted. The editorial office will share the relevant information with the authors. Example: Action Editor: Wei Lu. Submission received: 10 February 2023; revised version received: 30 May 2023; accepted for publication: 15 June 2023.
 
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{xcolor}
+\usepackage{placeins}
 
-\runningtitle{Running Article Title Here}
-\runningauthor{Author's Surnames Here}
+\runningtitle{User-Controlled AI-Conversational Graphs}
+\runningauthor{Kovacevic}
 
 \begin{document}
 
-\title{ConVerge: User-Controlled Conversational Context Graphs}
+\title{User-Controlled AI-Conversational Graphs}
 
 % \author{Vladimir Kovacevic$^{,1}$}
 \author{Vladimir Kovacevic\thanks{}$^{,1}$}
@@ -33,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-Existing conversational AI systems model multi-turn interactions as linear sequences of messages, where context is provided implicitly through full or truncated conversation history. This representation limits users' ability to revise earlier queries, explore alternative reasoning paths, or explicitly control which parts of the conversation influence subsequent responses. This paper proposes ConVerge, a graph-based framework for representing conversational context that enables non-linear navigation and user-controlled context manipulation. Conversations are modeled as directed graphs with tree structure, where nodes represent conversational states containing context, responses, and artifacts, while edges capture user queries that trigger state transitions. This formulation supports key operations including node selection and branching, allowing users to navigate to any prior conversational state and explore multiple reasoning paths without modifying existing history. The approach is model-agnostic and compatible with existing language models, and tool-using agents by offering clear interface for easy integration.
+Existing conversational AI systems model multi-turn interactions as linear sequences of messages, where context is provided implicitly through full or truncated conversation history. This representation limits users' ability to revise earlier queries, explore alternative reasoning paths, or explicitly control which parts of the conversation influence subsequent responses. This paper proposes ConVerge, a graph-based framework for representing conversational flow that enables non-linear navigation and user-controlled context manipulation. Conversations are modeled as directed graphs with tree structure, where nodes represent conversational states containing context, responses, and artifacts, while edges capture user queries that trigger state transitions. This formulation supports key operations including node selection and branching, allowing users to navigate to any prior conversational state and explore multiple reasoning paths without modifying existing history. The approach is model-agnostic and compatible with existing language models, and tool-using agents by offering clear interface for easy integration.
 \end{abstract}
 
 
@@ -42,6 +43,15 @@ Existing conversational AI systems model multi-turn interactions as linear seque
 A multi-turn human--AI interaction is considered as a process in which a user incrementally builds and revises conversational intent through a sequence of queries and responses. Existing conversational systems model this interaction as a linear sequence of turns, where the full or truncated history is implicitly provided as context to the language model. This representation limits the user's ability to revise earlier queries, explore alternative lines of reasoning, or explicitly control which parts of the conversation influence subsequent responses.
 
 To address these limitations, a graph-based representation of conversational context is proposed that enables non-linear navigation, explicit branching, and selective inclusion of conversational history. This approach treats conversational state as a persistent, user-manipulable structure rather than a transient sequence of messages.
+
+\section{Related Work}
+
+Traditional conversational AI systems maintain conversation history as linear sequences \cite{chen2017survey}, with recent approaches employing sliding window mechanisms or hierarchical summarization to manage context length constraints \cite{zhao2023survey,liu2024lost,akyurek2024context}. Some commercial chat interfaces offer limited branching capabilities through message editing and regeneration, but these typically overwrite history rather than preserving alternative paths.
+
+Graph-based representations have been explored in task-oriented dialog systems for modeling dialog state and policy learning \cite{tang2020multi,zhang2020task,besta2024graph}, but these focus on system-internal state management rather than user-facing context control \cite{yang2020graphdialog}. Version control metaphors have been applied to document editing and collaborative writing, yet their application to conversational AI remains unexplored. With principles explored in \cite{amershi2014power}, this work differs by providing explicit, user-controlled graph navigation with transparent context exposure, enabling users to treat conversational history as a manipulable artifact rather than an immutable sequence.
+
+Recent work on multi-agent systems \cite{wu2023autogen} and iterative refinement \cite{madaan2023self} demonstrates the value of non-linear conversation patterns, but lacks formalization of the underlying graph structure and user control mechanisms that ConVerge provides. The framework complements these efforts by offering a principled representation for managing complex conversational flows.
+
 
 \section{Conversational Context Graph}
 
@@ -83,7 +93,6 @@ This formulation allows multiple child nodes to originate from a single parent n
 % where $C_{\text{active}}$ is a linearized representation of the selected nodes suitable for input to a language model. The function $\Phi$ may apply ordering, summarization, or truncation strategies but does not alter the underlying graph structure.
 % Importantly, node selection is explicitly controlled by the user, enabling reuse of conversational history without modifying or deleting prior nodes.
 The graph structure supports several core operations:
-
 \begin{itemize}
     \item \textbf{Selecting}: The user explicitly chooses any existing node $v_i \in V$ to serve as the parent for the next conversational turn. This selection determines which conversational state provides the context for the subsequent AI Agent invocation. Unlike linear chat interfaces that implicitly use the most recent message, this operation allows users to navigate to any prior state and continue the conversation from that point without altering the existing graph structure.
 
@@ -95,45 +104,99 @@ These operations allow users to explore multiple reasoning paths and revise earl
 
 \section{Context Containment vs. Context Transmission}
 
-A critical challenge in conversational AI systems is that agents typically do not expose their internal context construction to users \cite{openai2023gpt4,park2023generative}. Moreover, naively reconstructing context solely from previous queries and responses may be inaccurate, as it fails to capture intermediate reasoning steps, retrieved documents, tool outputs, and other artifacts that influence agent behavior \cite{wei2022chain,gao2023retrieval,mialon2023augmented}.
+A critical challenge in conversational AI systems is that agents typically do not expose their internal context construction to users. Moreover, naively reconstructing context solely from previous queries and responses may be inaccurate, as it fails to capture intermediate reasoning steps, retrieved documents, tool outputs, and other artifacts that influence agent behavior.
 
-The ConVerge framework addresses this limitation by enabling AI agents to explicitly materialize and expose their context to users. Rather than requiring users to infer what information the agent is considering, the graph representation allows agents to populate the context field $c$ and artifacts field $a$ of each node, making the actual basis for each response transparent and directly inspectable by users. This explicit context exposure supports several benefits:
+The ConVerge framework addresses this limitation by enabling AI agents to explicitly materialize and expose their context to users. Rather than requiring users to infer what information the agent is considering, the graph representation allows agents to populate the context field $c$ and artifacts field $a$ of each node, making the actual basis for each response transparent and directly inspectable by users \cite{amershi2019guidelines}. This explicit context exposure supports several benefits:
 
 \begin{itemize}
     \item Users can verify what information influenced each response
-    \item Context can be reviewed and potentially edited before reuse in branching scenarios making enforcing it to more accuratelly address current issue and also to optimze cost by lowering the number of spent query tokens
+    \item Context can be reviewed and potentially edited before reuse in branching scenarios enforcing it to more accuratelly address current issue and also to optimze cost by lowering the number of spent query tokens
     \item The graph provides an audit trail of how context evolved throughout the conversation
 \end{itemize}
 
 A distinction is made between \emph{persistent conversational context} maintained within the graph nodes and \emph{transient model context} generated at invocation time. While the graph stores the historical context used for each turn, agents may apply additional transformations (summarization, truncation, reformatting) when constructing prompts for new queries. Protocols for agent communication and tool invocation operate downstream of this framework and remain orthogonal to the graph representation.
 
-\section{Implementation Considerations}
 
-The Conversational Context Graph is model-agnostic and can be layered on top of existing language models and agent architectures without requiring modifications to the underlying models themselves. The framework can be implemented as a middleware layer between the user interface and the language model API.
+\section{Reference Implementation}
 
-\paragraph{Data Storage} The tree structure can be efficiently stored using adjacency list representations or specialized tree data structures. Each node requires storage for context text, response text, artifacts (which may include embeddings, retrieved documents, or structured data), and metadata. Storage overhead grows linearly with conversation depth and branching factor. For long-running conversations, older subtrees can be archived or compressed without affecting the active conversation path.
+The Conversational Context Graph is model-agnostic and can be layered on top of existing language models and agent architectures without requiring modifications to the underlying models themselves. The framework can be implemented as a middleware layer between the user interface and the language model API. To validate the ConVerge framework and demonstrate its practical applicability, a reference implementation has been developed as an open-source web application. The implementation serves both as a proof-of-concept and as a blueprint for integrating the framework into existing conversational AI systems.
 
-\paragraph{User Interface} The framework necessitates UI elements for graph visualization and navigation. Users require the ability to: (1) view the conversation tree structure, (2) select any node as the active context, and (3) branch from any node. This can be implemented through tree visualizations (e.g., node-link diagrams), timeline interfaces with branching indicators, or hybrid approaches that show linear history with branch points highlighted.
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[width=0.65\textwidth,angle=-90]{fig/converge_app.pdf}
+\end{center}
+\caption{User interface of the reference implementation of the ConVerge application (\href{https://convergecontext.vercel.app/}{https://convergecontext.vercel.app/}). After creating new conversation the user enters consecutive questions and in parallel new nodes are being created on the central canvas of the graph. Before entering question the user can click on the any node to position there and question following that action will use context from that node.}
+\label{fig:ex}
+\end{figure}
+\FloatBarrier
 
-\paragraph{Integration Example} Consider integrating ConVerge with an existing AI agent system. When a user submits a query, the system would: (1) identify the selected parent node $v_i$, (2) retrieve the context $c_i$ and artifacts $a_i$ from that node, (3) perform document retrieval based on the query and existing context, (4) construct the AI Agent prompt incorporating retrieved documents, (5) generate the response $r_j$, and (6) create a new node $v_j$ storing the updated context, response, and newly retrieved documents. Users could then select any previous node to explore alternative queries with different retrieved contexts, enabling comparison of different retrieval strategies or refinement of search terms without losing prior results.
+The reference implementation employs a three-tier architecture:
+
+\begin{itemize}
+    \item \textbf{Backend Layer}: FastAPI-based REST API with WebSocket support for real-time streaming. The backend maintains the graph structure using in-memory data stores, exposing endpoints for graph operations (node selection, branching, traversal) and conversation management.
+
+    \item \textbf{LLM Integration Layer}: Model-agnostic client supporting multiple language model providers through a unified interface. The implementation includes automatic fallback mechanisms across multiple models to ensure reliability, and supports streaming responses for improved user experience.
+
+    \item \textbf{Frontend Layer}: React-based interactive graph visualization using React Flow, enabling users to navigate the conversation tree, select nodes, create branches, and inspect context at any point in the conversation history.
+\end{itemize}
+
+The visual interface presents three primary interaction modalities:
+
+\begin{enumerate}
+    \item \textbf{Graph Canvas}: Interactive tree visualization where nodes represent conversational states and edges represent user queries. Users can click any node to select it as the active context, visually inspect the conversation structure, and understand branching patterns.
+
+    \item \textbf{Context Inspection Panel}: Displays the complete context $c$ and artifacts $a$ associated with the selected node, making the agent's internal state transparent and auditable. Users can review what information influenced each response.
+
+    \item \textbf{Query Input Interface}: Allows users to submit queries from the currently selected node, automatically creating new child nodes and edges. The interface supports real-time streaming of agent responses.
+\end{enumerate}
+
+This design addresses the fundamental requirement of making conversational context an explicit, manipulable artifact rather than an implicit system state.
+
+\section{AI Agent Integration Interface}
+
+To enable AI agents to expose their context within the ConVerge framework, we propose a standardized integration interface. This interface allows agents to operate within the graph structure while maintaining compatibility with existing agent architectures.
+
+An agent integrates with ConVerge by implementing a response generation function with the following signature:
+
+\begin{verbatim}
+interface AgentInterface {
+  async generateResponse(
+    nodeContext: NodeContext,
+    query: Query
+  ): Promise<AgentResponse>
+}
+\end{verbatim}
+
+where:
+
+\begin{itemize}
+    \item \texttt{NodeContext} contains the parent node's context $c$, artifacts $a$, and metadata $m$
+    \item \texttt{Query} contains the user's query text and optional artifacts
+    \item \texttt{AgentResponse} encapsulates the response, updated context, and generated artifacts
+\end{itemize}
 
 
-\section{Related Work}
+The exposed context is the mechanism through which agents make their internal state transparent. Rather than requiring users to infer what information the agent considered, the agent explicitly materializes and returns its working context.
 
-Traditional conversational AI systems maintain conversation history as linear sequences, with recent approaches employing sliding window mechanisms or hierarchical summarization to manage context length constraints \cite{zhao2023survey}. Some commercial chat interfaces offer limited branching capabilities through message editing and regeneration, but these typically overwrite history rather than preserving alternative paths.
-
-Graph-based representations have been explored in task-oriented dialog systems for modeling dialog state and policy learning, but these focus on system-internal state management rather than user-facing context control. Version control metaphors have been applied to document editing and collaborative writing, yet their application to conversational AI remains unexplored. This work differs by providing explicit, user-controlled graph navigation with transparent context exposure, enabling users to treat conversational history as a manipulable artifact rather than an immutable sequence.
-
-Recent work on multi-agent systems \cite{wu2023autogen} and iterative refinement \cite{madaan2023self} demonstrates the value of non-linear conversation patterns, but lacks formalization of the underlying graph structure and user control mechanisms that ConVerge provides. The framework complements these efforts by offering a principled representation for managing complex conversational flows.
 
 \section{Conclusion}
 
 This paper presents ConVerge, a graph-based framework for user-controlled conversational context management. By representing conversations as trees where nodes capture conversational states and edges encode user queries, the approach enables non-linear navigation, explicit branching, and transparent context exposure. The framework addresses fundamental limitations of linear conversation models, allowing users to explore alternative reasoning paths, revise earlier decisions, and inspect the contextual basis for agent responses.
 
-ConVerge is model-agnostic and can be integrated with existing language models, retrieval-augmented generation systems, and agent architectures without modifications to the underlying models. The framework opens new possibilities for human-AI interaction, treating conversations as structures that can be explored and manipulated rather than ephemeral sequences. Future work includes empirical evaluation of user behavior with graph-based conversation interfaces and investigation of optimal visualization and navigation paradigms for complex conversational graphs.
+The work makes three principal contributions. First, it formalizes conversational context as a directed graph structure with explicit operations for node selection and branching. Second, it proposes a standardized agent integration interface that enables AI agents to expose their internal context, making the information influencing each response transparent and auditable. Third, it demonstrates practical feasibility through a reference implementation featuring interactive graph visualization, real-time streaming, and multi-model support.
+
+ConVerge is model-agnostic and can be integrated with existing language models, retrieval-augmented generation systems \cite{xu2023retrieval}, and tool-using agent architectures without modifications to the underlying models. By providing clear specifications for context exposure, the framework enables developers to adapt existing agents with minimal effort while significantly enhancing user control and transparency.
+
+The reference implementation validates that the framework can be deployed with minimal infrastructure while maintaining full expressiveness of the graph representation. The interactive user interface demonstrates that complex conversational structures can be made accessible and manipulable through intuitive visual paradigms. The framework opens new possibilities for human-AI interaction, treating conversations as persistent structures that can be explored, branched, and manipulated rather than ephemeral sequences. 
+
+Future work includes empirical evaluation of user behavior with graph-based conversation interfaces, investigation of optimal visualization and navigation paradigms for complex conversational graphs, development of context summarization strategies for deep conversation trees, and exploration of collaborative multi-user scenarios where multiple users navigate and branch shared conversational graphs as a potential learning system. 
+
+
+\section*{Code availability}
+The code is fully open-source and available at \href{https://github.com/vladimirkovacevic/conVerge}{https://github.com/vladimirkovacevic/conVerge}. One instance of the application to test concepts of the framework is available at \href{https://convergecontext.vercel.app/}{https://convergecontext.vercel.app/}
 
 \begin{acknowledgments}
-The development and refinement of this paper was supported by Claude (Anthropic), an AI assistant that facilitated the iterative analysis and improvement of the wording.
+The development and refinement of this paper was supported by Claude 4.5 Sonet (Anthropic), an AI assistant that facilitated the iterative analysis, improvement of the wording and implementation of the ConVerge application.
 \end{acknowledgments}
 
 \bibliographystyle{compling}
